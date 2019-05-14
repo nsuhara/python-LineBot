@@ -1,0 +1,101 @@
+<!--
+author          : nsuhara <na010210dv@gmail.com>
+date created    : 2019/5/1
+python version  : 3.7.3
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clock_in</title>
+    <style type="text/css">
+        th {
+            padding: 5% 5%;
+        }
+
+        button {
+            color: black;
+            font-size: 100%;
+            width: 100%
+        }
+
+        div.label_user_id {
+            color: black;
+            font-size: 100%;
+            text-align: right;
+        }
+
+        div.input_user_id {
+            text-align: left;
+        }
+
+        input {
+            color: black;
+            font-size: 100%;
+            width: 90%;
+        }
+    </style>
+</head>
+
+<body>
+    <table align="center" border="1" width="100%">
+        <tr>
+            <th width="50%">
+                <div class="label_user_id">社員番号:</div>
+            </th>
+            <th width="50%">
+                <div class="input_user_id"><input type="number" id="user_id" required autofocus></div>
+            </th>
+        </tr>
+        <tr>
+            <th colspan="2"><button id="check_in">出社時刻</button></th>
+        </tr>
+        <tr>
+            <th colspan="2"><button id="check_out">退社時刻</button></th>
+        </tr>
+    </table>
+
+    <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function (e) {
+            liff.init(function (data) {
+                initializeApp(data);
+            });
+        };
+
+        function initializeApp(data) {
+            document.getElementById("user_id").value = "";
+            document.getElementById("check_in").addEventListener("click", function () { clock_in("check_in") });
+            document.getElementById("check_out").addEventListener("click", function () { clock_in("check_out") });
+        }
+
+        function clock_in(handle) {
+            if (!window.confirm("社員番号:" + document.getElementById("user_id").value + "\n本当によろしいですか?")) {
+                return
+            }
+            var event = JSON.stringify({
+                "type": "process",
+                "data": {
+                    "model": "clock_in",
+                    "process": {
+                        "handle": handle,
+                        "user_id": document.getElementById("user_id").value
+                    }
+                }
+            })
+            $.post("https://<app-name>.herokuapp.com/postback", event)
+                .done(function (data) {
+                    window.alert(data);
+                    liff.closeWindow();
+                })
+                .fail(function () {
+                    window.alert("Error sending message: " + error);
+                })
+        }
+    </script>
+</body>
+
+</html>

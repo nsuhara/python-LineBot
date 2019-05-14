@@ -1,0 +1,5 @@
+.venv
+.vscode
+app/liff/_clock_in.html
+app/models/_clock_in.py
+app/processes/_clock_in.py
